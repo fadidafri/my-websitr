@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار صحيح وخطأ - 20 سؤال</title>
+  <style>
+    body {
+      font-family: Arial;
+      direction: rtl;
+      margin: 20px;
+    }
+
+    .question {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .result {
+      margin-top: 10px;
+      font-weight: bold;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .incorrect {
+      background-color: red;
+      color: white;
+    }
+
+    button {
+      margin-left: 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>اختبار "صحيح أو خطأ" - 20 سؤال</h2>
+
+  <div id="quiz"></div>
+
+  <script>
+    // الأسئلة والإجابات (true للصحيح، false للخاطئ)
+    const questions = [
+      { text: "الشمس تدور حول الأرض.", answer: false },
+      { text: "الماء يتجمد عند 0 درجة مئوية.", answer: true },
+      { text: "عدد الكواكب في النظام الشمسي هو 9.", answer: false },
+      { text: "الزرافة أطول حيوان بري.", answer: true },
+      { text: "القلب يضخ الدم.", answer: true },
+      { text: "القطط من فصيلة الكلاب.", answer: false },
+      { text: "الحديد معدن.", answer: true },
+      { text: "الشاي يحتوي على الكافيين.", answer: true },
+      { text: "السنة بها 364 يومًا.", answer: false },
+      { text: "أفريقيا هي أكبر قارة.", answer: false },
+      { text: "التمساح من الزواحف.", answer: true },
+      { text: "الإنسان له 4 أرجل.", answer: false },
+      { text: "النحل يصنع العسل.", answer: true },
+      { text: "الهواء لا وزن له.", answer: false },
+      { text: "البحر الميت أخفض نقطة على سطح الأرض.", answer: true },
+      { text: "الضوء يسير أسرع من الصوت.", answer: true },
+      { text: "الذئب نباتي.", answer: false },
+      { text: "الذهب موصل جيد للكهرباء.", answer: true },
+      { text: "الحصان يعيش في الماء.", answer: false },
+      { text: "الخلية هي وحدة بناء الجسم.", answer: true }
+    ];
+
+    const quizContainer = document.getElementById("quiz");
+
+    // إضافة الأسئلة والخيارات
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <p><strong>س${index + 1}: </strong>${q.text}</p>
+        <button onclick="check(${index}, true)">صحيح</button>
+        <button onclick="check(${index}, false)">خطأ</button>
+        <div id="result-${index}" class="result"></div>
+      `;
+      quizContainer.appendChild(div);
+    });
+
+    // دالة التحقق من الإجابة
+    function check(index, userAnswer) {
+      const resultDiv = document.getElementById(`result-${index}`);
+      if (userAnswer === questions[index].answer) {
+        resultDiv.textContent = "إجابة صحيحة ✔️";
+        resultDiv.className = "result correct";
+      } else {
+        resultDiv.textContent = "إجابة خاطئة ❌";
+        resultDiv.className = "result incorrect";
+      }
+    }
+  </script>
+
+</body>
+</html>
