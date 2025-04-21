@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار الجغرافيا - صحيح أم خطأ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_blank_without_borders.svg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 10px;
+      margin: 50px auto;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 26px;
+    }
+
+    .question-box {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    #questionText {
+      color: black;
+      font-size: 20px;
+    }
+
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .incorrect {
+      background-color: red;
+      color: white;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #startButton {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 20px;
+    }
+
+    #restartButton {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    #score {
+      margin-top: 20px;
+      background-color: lightgray;
+      color: black;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+
+    #timer {
+      color: yellow;
+      font-size: 20px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>اختبار الجغرافيا - صحيح أم خطأ</h2>
+
+    <button id="startButton" onclick="startTest()">ابدأ الاختبار</button>
+
+    <div class="question-box" id="questionBox" style="display: none;">
+      <p id="questionText"></p>
+      <div id="timer"></div>
+      <button id="trueButton" onclick="checkAnswer(true)">صحيح</button>
+      <button id="falseButton" onclick="checkAnswer(false)">خطأ</button>
+      <div id="result" class="result"></div>
+    </div>
+
+    <div id="score" style="display: none;">
+      <strong>عدد الإجابات الصحيحة:</strong> <span id="correctCount">0</span> من 20
+    </div>
+
+    <button id="restartButton" onclick="restartTest()" style="display: none;">إعادة الاختبار</button>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      { text: "الجزائر تطل على البحر الأبيض المتوسط.", answer: true },
+      { text: "أستراليا تقع في قارة أوروبا.", answer: false },
+      { text: "القاهرة عاصمة السودان.", answer: false },
+      { text: "قارة آسيا هي الأكبر من حيث المساحة.", answer: true },
+      { text: "القطب الشمالي عبارة عن قارة جليدية.", answer: false },
+      { text: "البرازيل تقع في أمريكا الجنوبية.", answer: true },
+      { text: "الصحراء الكبرى في قارة آسيا.", answer: false },
+      { text: "جبل طارق يقع بين المغرب وإسبانيا.", answer: true },
+      { text: "نهر الأمازون في إفريقيا.", answer: false },
+      { text: "روسيا تمتد في قارتين.", answer: true },
+      { text: "المغرب يحده المحيط الأطلسي.", answer: true },
+      { text: "الهند تقع في قارة أفريقيا.", answer: false },
+      { text: "الأرجنتين تقع في أمريكا الشمالية.", answer: false },
+      { text: "تركيا تقع بين أوروبا وآسيا.", answer: true },
+      { text: "اليابان تقع في المحيط الهادئ.", answer: true },
+      { text: "فرنسا تقع في قارة أوروبا.", answer: true },
+      { text: "نهر النيل يصب في المحيط الأطلسي.", answer: false },
+      { text: "السعودية تطل على البحر الأحمر.", answer: true },
+      { text: "الولايات المتحدة تقع في قارة أمريكا الجنوبية.", answer: false },
+      { text: "نيجيريا تقع في قارة إفريقيا.", answer: true }
+    ];
+
+    let questions = [];
+    let questionIndex = 0;
+    let correctCount = 0;
+    let timerInterval;
+    let timeLeft = 10;
+    let answered = false;
+
+    const questionText = document.getElementById("questionText");
+    const resultDiv = document.getElementById("result");
+    const scoreSpan = document.getElementById("correctCount");
+    const timerDiv = document.getElementById("timer");
+
+    function startTest() {
+      questions = [...originalQuestions].sort(() => Math.random() - 0.5);
+      questionIndex = 0;
+      correctCount = 0;
+      answered = false;
+
+      document.getElementById("startButton").style.display = "none";
+      document.getElementById("restartButton").style.display = "none";
+      document.getElementById("questionBox").style.display = "block";
+      document.getElementById("score").style.display = "none";
+      scoreSpan.textContent = "0";
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (questionIndex >= questions.length) {
+        endTest();
+        return;
+      }
+
+      answered = false;
+      const current = questions[questionIndex];
+      questionText.textContent = `س${questionIndex + 1}: ${current.text}`;
+      resultDiv.textContent = "";
+      resultDiv.className = "result";
+
+      // تفعيل الأزرار
+      document.getElementById("trueButton").disabled = false;
+      document.getElementById("falseButton").disabled = false;
+
+      timeLeft = 10;
+      timerDiv.style.display = "block";
+      timerDiv.textContent = `الوقت المتبقي: ${timeLeft} ثانية`;
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDiv.textContent = `الوقت المتبقي: ${timeLeft} ثانية`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          if (!answered) {
+            answered = true;
+            resultDiv.textContent = "انتهى الوقت!";
+            resultDiv.classList.add("incorrect");
+            disableButtons();
+            questionIndex++;
+            setTimeout(showQuestion, 1000);
+          }
+        }
+      }, 1000);
+    }
+
+    function checkAnswer(userAnswer) {
+      if (answered) return;
+      answered = true;
+
+      clearInterval(timerInterval);
+
+      const correct = questions[questionIndex].answer;
+
+      if (userAnswer === correct) {
+        correctCount++;
+        resultDiv.textContent = "إجابة صحيحة!";
+        resultDiv.classList.add("correct");
+      } else {
+        resultDiv.textContent = "إجابة خاطئة!";
+        resultDiv.classList.add("incorrect");
+      }
+
+      scoreSpan.textContent = correctCount;
+      disableButtons();
+      questionIndex++;
+
+      setTimeout(showQuestion, 1000);
+    }
+
+    function disableButtons() {
+      document.getElementById("trueButton").disabled = true;
+      document.getElementById("falseButton").disabled = true;
+    }
+
+    function endTest() {
+      clearInterval(timerInterval);
+      document.getElementById("timer").style.display = "none";
+      document.getElementById("questionBox").style.display = "none";
+      document.getElementById("score").style.display = "block";
+      document.getElementById("restartButton").style.display = "inline-block";
+    }
+
+    function restartTest() {
+      startTest();
+    }
+  </script>
+
+</body>
+</html>
